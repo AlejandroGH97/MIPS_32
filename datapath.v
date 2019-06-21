@@ -3,7 +3,7 @@ input clk;
 
 wire[31:0] instruction;
 
-reg[31:0] pc = 32'b0;
+reg[7:0] pc = 8'b00000000;
 
 //variables
 wire[5:0] opcode,funct;
@@ -11,20 +11,28 @@ wire[4:0] rs,rt,rd;
 wire[25:0] address;
 wire[15:0] immediate;
 
+
 //https://inst.eecs.berkeley.edu/~cs61c/resources/MIPS_Green_Sheet.pdf
 
 
 //senales
-wire RegWrite, ALUSrc, MemRead, MemWrite, MemToReg, Branch, rt_rd;
+wire RegWrite, RegRead, ALUSrc, MemRead, MemWrite, MemToReg, Branch, rt_rd;
 wire[1:0] PCSrc;
 
 //registros
-wire[31:0] rs_reg, rt_reg, rd_reg, mem_read;
+wire[31:0] rs_reg, rt_reg, writeData, mem_read;
 
 InstructionMemory getInstruction(pc,instruction);
 
-instruction_process processInstruction(instruction,opcode,rs,rt,rd,funct,immediate,address);
+InstructionProcess processInstruction(instruction,opcode,rs,rt,rd,funct,immediate,address);
 
+Registers RegOperations(rs, rt, rd, opcode, regWrite, RegRead, writeData, rs_reg, rt_reg);
+
+DataMemory MemOperations(writeData,writeData,opcode,memRead,memWrite,clk,mem_read);
+
+ALU ALUop();
+
+ControlUnit signals();
 
 
 always @ ( clk ) begin
@@ -61,3 +69,5 @@ endmodule
 //Use J for calling subroutines
 //Use Jal for calling functions
 //Use Jr for ending a subroutine by jumping to the return address (ra)
+
+//No clock en reg!----------------!

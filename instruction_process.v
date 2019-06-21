@@ -1,4 +1,4 @@
-module instruction_process([31:0]instruction,
+module InstructionProcess([31:0]instruction,
                             [5:0]opcode,
                             [4:0]rs,
                             [4:0]rt,
@@ -13,11 +13,12 @@ output[5:0] opcode,funct;
 output[15:0] immediate;
 output[25:0] address;
 
-wire instruction;
-reg opcode,rs,rt,rd,funct;
-reg immediate;
-reg address;
 
+wire[31:0] instruction;
+reg[4:0] rs,rt,rd;
+reg[5:0] opcode,funct;
+reg[15:0] immediate;
+reg[25:0] address;
 
 
 always @ ( instruction ) begin
