@@ -1,22 +1,29 @@
-module Registers([4:0]read1,
-  [4:0]read2,
-  [4:0]writeAdd,
-  [5:0] opcode,
-  regWrite,RegRead,
-  [31:0]writeData,
-  [31:0]out1,
-  [31:0]out2);
+module Registers([31:0]pc,
+                  [4:0]read1,
+                  [4:0]read2,
+                  [4:0]writeAdd,
+                  [5:0] opcode,
+                  [15:0]immediate,
+                  regWrite,RegRead,
+                  [31:0]writeData,
+                  [31:0]out1,
+                  [31:0]out2,
+                  clk);
 
+input[31:0] pc;
 input[4:0] read1, read2, writeAdd;
 input[5:0] opcode;
-input clk, regWrite, rt_rd, RegRead;
+input[15:0] immediate;
+input clk, regWrite, RegRead;
 input[31:0] writeData;
 output [31:0] out1, out2;
 
-
+wire[31:0] pc;
 wire[4:0] read1, read2, writeAdd;
 wire[5:0] opcode;
-wire clk, regWrite, rt_rd, RegRead;
+wire[15:0] immediate;
+
+wire clk, regWrite, RegRead;
 wire[31:0] writeData;
 reg [31:0] out1, out2;
 
@@ -28,42 +35,35 @@ initial begin
 end
 
 
+always @ ( posedge clk ) begin
+  if(opcode==6'b000011)//jal
+  begin
+    registers[31]=pc+3'b100;
+  end
+end
+
 always @ ( writeData ) begin
+
   if(regWrite)
   begin
-    if(rt_rd)//usa rd
+    if(opcode == 6'b100000)//lb
     begin
-      if(opcode==6'b100100)//lb
-      begin
-        registers[writeAdd][7:0]=writeData[7:0];
-      end
-      else if(opcode==6'b100101)//lh
-      begin
-        registers[writeAdd][15:0]=writeData[15:0];
-      end
-      else
-      begin
-        registers[writeAdd]=writeData;
-      end
+      registers[read1][7:0]=writeData[7:0];
     end
-
-    else//usa rt
+    else if(opcode == 6'b100001)//lh
     begin
-    if(opcode==6'b101000)//sb
-    begin
-      registers[read2][7:0]=writeData[7:0];
+      registers[read1][15:0]=writeData[15:0];
     end
-    else if(opcode==6'b101001)//sh
+    else if(opcode == 6'b001111 )//lui
     begin
-      registers[read2][15:0]=writeData[15:0];
+      registers[read1]={immediate,16'b0000000000000000}
     end
     else
     begin
-      registers[read2]=writeData;
+      registers[read1]=writeData;
     end
-    end
-    $writememb("registers.mem",registers);
   end
+  $writememb("registers.mem",registers);
 end
 
 always @ ( read1, read2 ) begin

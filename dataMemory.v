@@ -1,55 +1,63 @@
-module DataMemory([7:0]readAddress,//de la alu
-  [31:0]writeData,
-  [5:0]opcode,
-  memRead,
-  memWrite,
-  clk,
-  [31:0]out);
+module DataMemory([31:0]ALU_result,
+                    [31:0]rt_reg,
+                    [5:0]opcode,
+                    memRead,
+                    memWrite,
+                    clk,
+                    [15:0]immediate,
+                    [31:0]out);
 
-input[7:0] readAddress;
-input[31:0] writeData;
+input[31:0] ALU_result;
+input[31:0] rt_reg;
 input[5:0] opcode;
 input memRead,memWrite,clk;
 output[31:0] out;
 
 
-wire[7:0] readAddress;
-wire[31:0] writeData;
+wire[31:0] ALU_result;
+wire[31:0] rt_reg;
 wire[5:0] opcode;
 wire memRead,memWrite,clk;
 reg[31:0] out;
 
 
-reg [31:0] memory [255:0];
+reg [7:0] memory [255:0];
 
 
 initial begin
   $readmemb("data_mem.txt",memory);
 end
 
-always @ ( readAddress ) begin
-  if(memRead)
+always @ ( negedge clk ) begin
+
+  Sext_imm = {16{immediate[15]}, immediate};
+
+  if(memWrite)
   begin
     if(opcode==6'b101000)//sb
     begin
-      memory[readAddress][7:0]=writeData[7:0];
+      memory[ALU_result]=rt_reg[7:0];
     end
     else if(opcode==6'b101001)//sh
     begin
-      memory[readAddress][15:0]=writeData[15:0];
+      memory[ALU_result]=rt_reg[15:8];
+      memory[ALU_result + 1]=rt_reg[7:0];
     end
-    else
+    else if(opcode==6'b101011)//sw
     begin
-      memory[readAddress]=writeData;
+      memory[ALU_result]=rt_reg[31:24];
+      memory[ALU_result + 1]=rt_reg[23:16];
+      memory[ALU_result + 2]=rt_reg[15:8];
+      memory[ALU_result + 3]=rt_reg[7:0];
     end
     $writememb("data_mem.txt", memory);
   end
 end
 
-always @ (negedge clk ) begin
-  if(memWrite)
+always @ ( rs_reg ) begin
+  if(memRead)//para loads
   begin
-    memory[readAddress] = writeData;
+    out = {memory[ALU_result],memory[ALU_result + 1],memory[ALU_result + 2],memory[ALU_result + 3]};//loads
   end
 end
 
