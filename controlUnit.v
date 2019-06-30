@@ -1,10 +1,10 @@
-module ControlUnit(RegWrite, RegRead, MemRead, MemWrite, Branch, toReg, [5:0]opcode, [5:0]funct);
+module ControlUnit(RegWrite, RegRead, MemRead, MemWrite, Branch, toReg,rt_rd, opcode, funct);
 
 input[5:0] opcode, funct;
-output RegWrite, RegRead, MemRead, MemWrite, toReg;
+output RegWrite, RegRead, MemRead, MemWrite, toReg, Branch,rt_rd;
 
 wire[5:0]opcode, funct;
-reg RegWrite, RegRead, MemRead, MemWrite, toReg;
+reg RegWrite, RegRead, MemRead, MemWrite, toReg, Branch,rt_rd;
 
 always @ ( opcode, funct ) begin
   RegWrite = 1'b0;
@@ -13,6 +13,7 @@ always @ ( opcode, funct ) begin
   MemWrite = 1'b0;
   Branch = 1'b0;
   toReg = 1'b0;//0 ALU, 1 mem
+  rt_rd = 1'b1;//a donde se escribe: 0 rd, 1 rt
 
   //R
   if(opcode==6'b000000)
@@ -20,7 +21,8 @@ always @ ( opcode, funct ) begin
     RegRead = 1'b1;
     if(funct!=6'b001000)//jr
     begin
-      regWrite=1'b1;
+      rt_rd=1'b0;
+      RegWrite=1'b1;
     end
   end
 
@@ -46,16 +48,20 @@ always @ ( opcode, funct ) begin
 
   else if(opcode == 6'b001111)//lui
   begin
-    regWrite=1'b1;
+    RegWrite=1'b1;
   end
 
   else if(opcode == 6'b000011)//jal
   begin
-    regWrite=1'b1;
+    RegWrite=1'b1;
   end
 
   //branch se calcula en la ALU
 
+end
+
+initial begin
+  $monitor("SIGNALS |> RegWrite: %b - RegRead: %b - MemRead: %b - MemWrite: %b - Branch: %b - toReg: %b",RegWrite, RegRead, MemRead, MemWrite,Branch,toReg);
 end
 
 endmodule

@@ -1,15 +1,16 @@
-module DataMemory([31:0]ALU_result,
-                    [31:0]rt_reg,
-                    [5:0]opcode,
+module DataMemory(ALU_result,
+                    rt_reg,
+                    opcode,
                     memRead,
                     memWrite,
                     clk,
-                    [15:0]immediate,
-                    [31:0]out);
+                    immediate,
+                    out);
 
 input[31:0] ALU_result;
 input[31:0] rt_reg;
 input[5:0] opcode;
+input[15:0] immediate;
 input memRead,memWrite,clk;
 output[31:0] out;
 
@@ -17,12 +18,14 @@ output[31:0] out;
 wire[31:0] ALU_result;
 wire[31:0] rt_reg;
 wire[5:0] opcode;
+wire[15:0] immediate;
 wire memRead,memWrite,clk;
 reg[31:0] out;
 
 
-reg [7:0] memory [255:0];
+reg [7:0] memory [0:255];
 
+reg signed[31:0] Sext_imm;
 
 initial begin
   $readmemb("data_mem.txt",memory);
@@ -30,7 +33,7 @@ end
 
 always @ ( negedge clk ) begin
 
-  Sext_imm = {16{immediate[15]}, immediate};
+  Sext_imm = {{16{immediate[15]}}, immediate};
 
   if(memWrite)
   begin
@@ -54,7 +57,7 @@ always @ ( negedge clk ) begin
   end
 end
 
-always @ ( rs_reg ) begin
+always @ ( ALU_result ) begin
   if(memRead)//para loads
   begin
     out = {memory[ALU_result],memory[ALU_result + 1],memory[ALU_result + 2],memory[ALU_result + 3]};//loads

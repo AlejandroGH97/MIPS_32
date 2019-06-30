@@ -1,11 +1,11 @@
-module InstructionProcess([31:0]instruction,
-                            [5:0]opcode,
-                            [4:0]rs,
-                            [4:0]rt,
-                            [4:0]rd,
-                            [5:0]funct,
-                            [15:0]immediate,
-                            [25:0]address);
+module InstructionProcess(instruction,
+                            opcode,
+                            rs,
+                            rt,
+                            rd,
+                            funct,
+                            immediate,
+                            address);
 
 input [31:0] instruction;
 output[4:0] rs,rt,rd;
@@ -22,7 +22,7 @@ reg[25:0] address;
 
 
 always @ ( instruction ) begin
-  opcode = instruction[31:25];
+  opcode = instruction[31:26];
   if(opcode==6'b000000)//R
   begin
     rs = instruction[25:21];

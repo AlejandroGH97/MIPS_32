@@ -3,7 +3,7 @@ input clk;
 
 wire[31:0] instruction;
 
-reg[31:0] pc = 31'b00000000000000000000000000000000;
+reg[31:0] PC = 32'b00000000000000000000000000000000;
 
 //variables
 wire[5:0] opcode,funct;
@@ -16,35 +16,36 @@ wire[15:0] immediate;
 
 
 //senales
-wire RegWrite, RegRead, toReg, MemRead, MemWrite, Branch;//toReg nos dice si excribir de ALU o de memoria (0 de ALU 1 de mem)
+wire RegWrite, RegRead, toReg, MemRead, MemWrite, Branch,rt_rd;//toReg nos dice si excribir de ALU o de memoria (0 de ALU 1 de mem)
 wire[1:0] PCSrc;
 
 //datos
 wire[31:0] rs_reg, rt_reg, writeData, mem_read_data, ALU_result;
 
-InstructionMemory getInstruction(pc,instruction);
+InstructionMemory getInstruction(PC,instruction);
 
 InstructionProcess processInstruction(instruction,opcode,rs,rt,rd,funct,immediate,address);
 
-Registers RegOperations(pc,rs, rt, rd, opcode, immediate, regWrite, RegRead, writeData, rs_reg, rt_reg,clk);
+Registers RegOperations(PC,rs, rt, rd, opcode, immediate, regWrite, RegRead, writeData, rs_reg, rt_reg,clk,rt_rd);
 
 DataMemory MemOperations(ALU_result,rt_reg,opcode,memRead,memWrite,clk,immediate,mem_read_data);//revisar parametros
 
-ALU ALUop(opcode,rs_reg,rt_reg,immediate,Branch,funct,Branch,ALU_result);
+ALU ALUop(opcode,rs_reg,rt_reg,immediate,Branch,funct,ALU_result);
 
-ControlUnit signals(RegWrite, RegRead, MemRead, MemWrite, Branch,toReg, opcode, funct);
+ControlUnit signals(RegWrite, RegRead, MemRead, MemWrite, Branch,toReg,rt_rd, opcode, funct);
 
-MemToReg regData(toReg, ALU_result, mem_read, writeData);
+MemToReg regData(toReg, ALU_result, mem_read_data, writeData);
 
 
-always @ ( negedge clk ) begin
+always @ ( posedge clk ) begin
   if(opcode==6'b000000 && funct ==6'b001000)//JR
   begin
     PC = rs_reg;
   end
-  else if(opcode==6'b000010 | opcode==6'000011)//J
+  else if(opcode==6'b000010 | opcode==6'b000011)//J
   begin
-    PC= {(pc+3'b100)[31:28], address,2'b00};
+    PC = PC + 3'b100;
+    PC= {PC[31:28],address,2'b00};
   end
   else if(Branch==1'b1)//branch
   begin
@@ -57,12 +58,11 @@ always @ ( negedge clk ) begin
 end
 
 
+initial begin
+  $monitor("PC: %b - Instruction: %b - opcode: %b - rs: %b - rt: %b - rd: %b\nfunct: %b - immediate: %b - address: %b - mem_read_data: %b - ALU_result: %b\nSIGNALS |> RegWrite: %b - RegRead: %b - MemRead: %b - MemWrite: %b - Branch: %b - toReg: %b - rt_rd: %b",PC,instruction,opcode,rs,rt,rd,funct,immediate,address,mem_read_data,ALU_result,RegWrite, RegRead, MemRead, MemWrite,Branch,toReg,rt_rd);
+end
+
 
 endmodule
 
-//Use J for calling subroutines
-//Use Jal for calling functions
-//Use Jr for ending a subroutine by jumping to the return address (ra)
-
 //No clock en reg!----------------!
-//GUARDAR JAL

@@ -1,18 +1,18 @@
-module InstructionMemory([31:0]pc, [31:0] instruction);
+module InstructionMemory(pc, instruction);
 input [31:0]pc;
-output [31:0] out;
+output [31:0] instruction;
 
 wire[31:0] pc;
-reg[31:0] out;
+reg[31:0] instruction;
 
-reg [7:0] instruction_memory [255:0];
+reg [7:0] mem [0:255];
 
 initial begin
-  $readmemb("instruction_mem.txt", mem);
+  $readmemb("instructionMem.txt", mem);
 end
 
-always @ ( in ) begin
-  out = {mem[pc],mem[pc+1'b1],mem[pc+2'b10],mem[pc+2'b11]};
+always @ ( pc ) begin
+  instruction = {mem[pc],mem[pc+1'b1],mem[pc+2'b10],mem[pc+2'b11]};
 end
 
 
