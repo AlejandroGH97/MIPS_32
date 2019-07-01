@@ -94,9 +94,11 @@ always @ (rs_reg,rt_reg,funct,immediate) begin
     begin
       Branch = 1'b1;
       ALU_result = BranchAdd;
+      $display("Branch taken.");
     end
     else
     begin
+    $display("Branch not taken.");
       Branch = 1'b0;
     end
   end
@@ -106,11 +108,13 @@ always @ (rs_reg,rt_reg,funct,immediate) begin
   $display("bneq");
     if(Srs_reg!=Srt_reg)
     begin
+    $display("Branch taken.");
       Branch = 1'b1;
       ALU_result = BranchAdd;
     end
     else
     begin
+    $display("Branch not taken.");
       Branch = 1'b0;
     end
   end
@@ -120,11 +124,13 @@ always @ (rs_reg,rt_reg,funct,immediate) begin
   $display("bgez");
     if(Srs_reg>=32'b00000000000000000000000000000000)
     begin
+    $display("Branch taken.");
       Branch = 1'b1;
       ALU_result = BranchAdd;
     end
     else
     begin
+    $display("Branch not taken.");
       Branch = 1'b0;
     end
   end

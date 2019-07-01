@@ -33,38 +33,35 @@ DataMemory MemOperations(ALU_result,rt_reg,opcode,MemRead,MemWrite,clk,immediate
 
 ALU ALUop(opcode,rs_reg,rt_reg,immediate,Branch,funct,ALU_result);
 
-ControlUnit signals(RegWrite, RegRead, MemRead, MemWrite, Branch,toReg,rt_rd, opcode, funct);
+ControlUnit signals(RegWrite, RegRead, MemRead, MemWrite,toReg,rt_rd, opcode, funct);
 
 MemToReg regData(toReg, ALU_result, mem_read_data, writeData);
 
 
 always @ (posedge clk) begin
+$display("PC calc");
   if(opcode==6'b000000 && funct ==6'b001000)//JR
   begin
-    $display("Jump to register: %b",rs_reg);
+    $display("Jump to register: %b\n",rs_reg);
     PC = rs_reg;
   end
-  else if(opcode==6'b000010 | opcode==6'b000011)//J
+  else if(opcode==6'b000010 || opcode==6'b000011)//J y JAL
   begin
-    $display("Jump with value: %b",{PC[31:28],address,2'b00});
+    $display("Jump with value: %b\n",{PC[31:28],address,2'b00});
     PC = PC + 3'b100;
     PC= {PC[31:28],address,2'b00};
   end
   else if(Branch==1'b1)//branch
   begin
     PC = PC + 4 + $signed(writeData);
-    $display("Branch to: %b",PC);
+    $display("Branch to: %b\n",PC);
   end
   else
-  begin//PC+1
+  begin//PC+4
+    $display("PC + 4");
     PC = PC + 3'b100;
   end
 end
-
-
- // initial begin
- //   $monitor("SIGNALS |> RegWrite: %b - RegRead: %b - MemRead: %b - MemWrite: %b - Branch: %b - toReg: %b - rt_rd: %b",RegWrite, RegRead, MemRead, MemWrite,Branch,toReg,rt_rd);
- // end
 
 
 endmodule

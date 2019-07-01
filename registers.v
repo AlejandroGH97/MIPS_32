@@ -36,10 +36,11 @@ initial begin
 end
 
 
-always @ (posedge pc) begin
+always @ (opcode) begin
   if(opcode==6'b000011)//jal
   begin
     registers[31]=pc+3'b100;
+    $display("Address %b saved in $ra",registers[31]);
   end
 end
 

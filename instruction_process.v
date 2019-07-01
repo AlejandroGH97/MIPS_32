@@ -30,7 +30,7 @@ always @ (instruction) begin
     rd = instruction[15:11];
     funct = instruction[5:0];
   end
-  else if(opcode==6'b000010 | opcode==6'b000011)//J
+  else if(opcode==6'b000010 || opcode==6'b000011)//J
   begin
     address = instruction[25:0];
   end
