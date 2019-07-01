@@ -8,7 +8,7 @@ reg[31:0] instruction;
 reg [7:0] mem [0:255];
 
 initial begin
-  $readmemb("instructionMem.txt", mem);
+  $readmemb("programa2.txt", mem);
 end
 
 always @ (pc) begin

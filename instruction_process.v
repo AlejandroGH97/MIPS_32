@@ -40,7 +40,7 @@ always @ (instruction) begin
     rt = instruction[20:16];
     immediate = instruction[15:0];
   end
-  $display("instruction: %b\nopcode: %b - rs: %b - rt: %b - rd: %b - funct: %b - immediate: %b",instruction,opcode,rs,rt,rd,funct,immediate);
+  $display("Instruction: %b\nOpcode: %b - rs: %b - rt: %b - rd: %b - funct: %b - Immediate: %b",instruction,opcode,rs,rt,rd,funct,immediate);
 end
 
 endmodule

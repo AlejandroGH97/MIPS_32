@@ -25,7 +25,7 @@ reg[31:0] out;
 
 reg [7:0] memory [0:255];
 
-reg signed[31:0] Sext_imm;
+reg signed[31:0] Sext_imm,Srs_reg;
 
 initial begin
   $readmemb("data_mem.txt",memory);
@@ -39,28 +39,34 @@ always @ ( negedge clk ) begin
   begin
     if(opcode==6'b101000)//sb
     begin
+    $display("Stored byte %b in memory address %b\n",rt_reg[7:0],ALU_result);
       memory[ALU_result]=rt_reg[7:0];
     end
     else if(opcode==6'b101001)//sh
     begin
+    $display("Stored halfword %b in memory address %b\n",rt_reg[15:0],ALU_result);
       memory[ALU_result]=rt_reg[15:8];
       memory[ALU_result + 1]=rt_reg[7:0];
     end
     else if(opcode==6'b101011)//sw
     begin
+    $display("Stored word %b in memory address %b\n",rt_reg,ALU_result);
       memory[ALU_result]=rt_reg[31:24];
       memory[ALU_result + 1]=rt_reg[23:16];
       memory[ALU_result + 2]=rt_reg[15:8];
       memory[ALU_result + 3]=rt_reg[7:0];
     end
-    $writememb("data_mem.txt", memory);
+    //$writememb("data_mem.txt", memory);
   end
 end
 
 always @ ( ALU_result ) begin
   if(memRead)//para loads
   begin
+    Srs_reg = ALU_result;
+    Sext_imm = {{16{immediate[15]}}, immediate};
     out = {memory[ALU_result],memory[ALU_result + 1],memory[ALU_result + 2],memory[ALU_result + 3]};//loads
+    $display("Memory sent value: %b",out);
   end
 end
 

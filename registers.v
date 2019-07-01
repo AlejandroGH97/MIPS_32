@@ -44,38 +44,42 @@ always @ (posedge pc) begin
 end
 
 always @ (writeData) begin
-  $display("registers got regWrite: %b",regWrite);
+  $display("Registers got regWrite: %b",regWrite);
   if(regWrite)
   begin
-    $display("WriteData_registers: %b\n",writeData);
     if(rt_rd)//Se escribe a rt
     begin
       if(opcode == 6'b100000)//lb
       begin
+      $display("Loaded byte %b in %b(rt)\n",writeData[7:0],read2);
         registers[read2][7:0]=writeData[7:0];
       end
       else if(opcode == 6'b100001)//lh
       begin
+      $display("Loaded halfword %b in %b(rt)\n",writeData[15:0],read2);
         registers[read2][15:0]=writeData[15:0];
       end
       else if(opcode == 6'b001111 )//lui
       begin
-        registers[read2]={immediate,16'b0000000000000000};
+      $display("Loaded upper immediate %b in %b(rt)\n",writeData,read2);
+        registers[read2]=writeData;
       end
       else
       begin
+      $display("Loaded data %b in %b(rt)\n",writeData,read2);
         registers[read2]=writeData;
       end
     end
     else//Se escribe a rd
     begin
+      $display("Loaded data %b in %b(rd)\n",writeData,writeAdd);
       registers[writeAdd]=writeData;
     end
   end
   //$writememb("registers.txt",registers);
 end
 
-always @ ( read1, read2 ) begin
+always @ (read1, read2) begin
 if (RegRead)
   begin
     out1 = registers[read1];

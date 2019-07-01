@@ -11,10 +11,12 @@ reg[31:0] out;
 always @ ( ALU_Result,mem_read ) begin
   if(toReg==1'b0)//ALU_Result
   begin
+  $display("Selected ALU data.");
     out=ALU_Result;
   end
   else if(toReg==1'b1)//mem_read
   begin
+  $display("Selected mem data: %b",mem_read);
     out=mem_read;
   end
 end

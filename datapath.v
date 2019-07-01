@@ -29,7 +29,7 @@ InstructionProcess processInstruction(instruction,opcode,rs,rt,rd,funct,immediat
 
 Registers RegOperations(PC,rs, rt, rd, opcode, immediate, RegWrite, RegRead, writeData, rs_reg, rt_reg,clk,rt_rd);
 
-DataMemory MemOperations(ALU_result,rt_reg,opcode,memRead,memWrite,clk,immediate,mem_read_data);//revisar parametros
+DataMemory MemOperations(ALU_result,rt_reg,opcode,MemRead,MemWrite,clk,immediate,mem_read_data);//revisar parametros
 
 ALU ALUop(opcode,rs_reg,rt_reg,immediate,Branch,funct,ALU_result);
 
@@ -41,16 +41,19 @@ MemToReg regData(toReg, ALU_result, mem_read_data, writeData);
 always @ (posedge clk) begin
   if(opcode==6'b000000 && funct ==6'b001000)//JR
   begin
+    $display("Jump to register: %b",rs_reg);
     PC = rs_reg;
   end
   else if(opcode==6'b000010 | opcode==6'b000011)//J
   begin
+    $display("Jump with value: %b",{PC[31:28],address,2'b00});
     PC = PC + 3'b100;
     PC= {PC[31:28],address,2'b00};
   end
   else if(Branch==1'b1)//branch
   begin
     PC = PC + 4 + $signed(writeData);
+    $display("Branch to: %b",PC);
   end
   else
   begin//PC+1
