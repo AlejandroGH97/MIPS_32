@@ -36,18 +36,18 @@ initial begin
 end
 
 
-always @ ( posedge clk ) begin
+always @ (posedge pc) begin
   if(opcode==6'b000011)//jal
   begin
     registers[31]=pc+3'b100;
   end
-  $writememb("registers.txt",registers);
 end
 
-always @ ( writeData ) begin
-
+always @ (writeData) begin
+  $display("registers got regWrite: %b",regWrite);
   if(regWrite)
   begin
+    $display("WriteData_registers: %b\n",writeData);
     if(rt_rd)//Se escribe a rt
     begin
       if(opcode == 6'b100000)//lb
@@ -72,18 +72,16 @@ always @ ( writeData ) begin
       registers[writeAdd]=writeData;
     end
   end
-  $writememb("registers.txt",registers);
+  //$writememb("registers.txt",registers);
 end
 
 always @ ( read1, read2 ) begin
-  if (RegRead) begin
-    registers[read1]=out1;
-    registers[read2]=out2;
+if (RegRead)
+  begin
+    out1 = registers[read1];
+    out2 = registers[read2];
+    $display("Register module got read1 %b with value: %b and read2 %b with value: %b",read1,out1,read2,out2);
   end
-end
-
-initial begin
-  $monitor("WriteData_registers: %b",writeData);
 end
 
 endmodule

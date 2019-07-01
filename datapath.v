@@ -1,5 +1,6 @@
 module datapath(clk);
 input clk;
+wire clk;
 
 wire[31:0] instruction;
 
@@ -26,7 +27,7 @@ InstructionMemory getInstruction(PC,instruction);
 
 InstructionProcess processInstruction(instruction,opcode,rs,rt,rd,funct,immediate,address);
 
-Registers RegOperations(PC,rs, rt, rd, opcode, immediate, regWrite, RegRead, writeData, rs_reg, rt_reg,clk,rt_rd);
+Registers RegOperations(PC,rs, rt, rd, opcode, immediate, RegWrite, RegRead, writeData, rs_reg, rt_reg,clk,rt_rd);
 
 DataMemory MemOperations(ALU_result,rt_reg,opcode,memRead,memWrite,clk,immediate,mem_read_data);//revisar parametros
 
@@ -37,7 +38,7 @@ ControlUnit signals(RegWrite, RegRead, MemRead, MemWrite, Branch,toReg,rt_rd, op
 MemToReg regData(toReg, ALU_result, mem_read_data, writeData);
 
 
-always @ ( posedge clk ) begin
+always @ (posedge clk) begin
   if(opcode==6'b000000 && funct ==6'b001000)//JR
   begin
     PC = rs_reg;
@@ -58,11 +59,9 @@ always @ ( posedge clk ) begin
 end
 
 
-initial begin
-  $monitor("PC: %b - Instruction: %b - opcode: %b - rs: %b - rt: %b - rd: %b\nfunct: %b - immediate: %b - address: %b - mem_read_data: %b - ALU_result: %b\nSIGNALS |> RegWrite: %b - RegRead: %b - MemRead: %b - MemWrite: %b - Branch: %b - toReg: %b - rt_rd: %b",PC,instruction,opcode,rs,rt,rd,funct,immediate,address,mem_read_data,ALU_result,RegWrite, RegRead, MemRead, MemWrite,Branch,toReg,rt_rd);
-end
+ // initial begin
+ //   $monitor("SIGNALS |> RegWrite: %b - RegRead: %b - MemRead: %b - MemWrite: %b - Branch: %b - toReg: %b - rt_rd: %b",RegWrite, RegRead, MemRead, MemWrite,Branch,toReg,rt_rd);
+ // end
 
 
 endmodule
-
-//No clock en reg!----------------!

@@ -21,7 +21,7 @@ reg[15:0] immediate;
 reg[25:0] address;
 
 
-always @ ( instruction ) begin
+always @ (instruction) begin
   opcode = instruction[31:26];
   if(opcode==6'b000000)//R
   begin
@@ -40,6 +40,7 @@ always @ ( instruction ) begin
     rt = instruction[20:16];
     immediate = instruction[15:0];
   end
+  $display("instruction: %b\nopcode: %b - rs: %b - rt: %b - rd: %b - funct: %b - immediate: %b",instruction,opcode,rs,rt,rd,funct,immediate);
 end
 
 endmodule

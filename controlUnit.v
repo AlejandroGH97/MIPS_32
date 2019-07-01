@@ -6,7 +6,9 @@ output RegWrite, RegRead, MemRead, MemWrite, toReg, Branch,rt_rd;
 wire[5:0]opcode, funct;
 reg RegWrite, RegRead, MemRead, MemWrite, toReg, Branch,rt_rd;
 
-always @ ( opcode, funct ) begin
+
+
+always @ (opcode, funct) begin
   RegWrite = 1'b0;
   RegRead = 1'b0;
   MemRead = 1'b0;
@@ -14,7 +16,7 @@ always @ ( opcode, funct ) begin
   Branch = 1'b0;
   toReg = 1'b0;//0 ALU, 1 mem
   rt_rd = 1'b1;//a donde se escribe: 0 rd, 1 rt
-
+  //$monitor("RegWrite %b, RegRead %b, MemRead %b, MemWrite %b, toReg %b, Branch %b,rt_rd %b",RegWrite, RegRead, MemRead, MemWrite, toReg, Branch,rt_rd);
   //R
   if(opcode==6'b000000)
   begin
@@ -55,13 +57,8 @@ always @ ( opcode, funct ) begin
   begin
     RegWrite=1'b1;
   end
-
+  $display("SIGNALS |> RegWrite: %b - RegRead: %b - MemRead: %b - MemWrite: %b - Branch: %b - toReg: %b - rt_rd: %b",RegWrite, RegRead, MemRead, MemWrite,Branch,toReg,rt_rd);
   //branch se calcula en la ALU
-
-end
-
-initial begin
-  $monitor("SIGNALS |> RegWrite: %b - RegRead: %b - MemRead: %b - MemWrite: %b - Branch: %b - toReg: %b",RegWrite, RegRead, MemRead, MemWrite,Branch,toReg);
 end
 
 endmodule

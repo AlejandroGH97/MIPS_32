@@ -14,7 +14,8 @@ reg [31:0]ALU_result;
 
 reg signed[31:0] Srs_reg, Srt_reg, Sext_imm, Zext_imm, BranchAdd;
 
-always @ ( opcode ) begin
+always @ (opcode,rs_reg,rt_reg,funct,immediate) begin
+  $display("ALU got opcode: %b",opcode);
   Branch=1'b0;
   Srs_reg = rs_reg;
   Srt_reg = rt_reg;
@@ -26,54 +27,64 @@ always @ ( opcode ) begin
   begin
     if(funct == 6'b100000)//add
     begin
+    $display("add");
       ALU_result = Srs_reg + Srt_reg;
     end
 
     if(funct == 6'b100010)//sub
     begin
+    $display("sub");
       ALU_result = Srs_reg - Srt_reg;
     end
 
     if(funct == 6'b100100)//and
     begin
+    $display("and");
       ALU_result = rs_reg & rt_reg;
     end
 
     if(funct == 6'b100111)//nor
     begin
+    $display("nor");
       ALU_result = rs_reg ~| rt_reg;
     end
 
     if(funct == 6'b100101)//or
     begin
+    $display("or");
       ALU_result = rs_reg | rt_reg;
     end
 
     if(funct == 6'b101010)//slt
     begin
-      ALU_result = (rs_reg < rt_reg)?1'b1:1'b0;
+    $display("slt");
+      ALU_result = (Srs_reg < Srt_reg)?1'b1:1'b0;
     end
   end
 
   //i
   else if(opcode == 6'b001000)//addi
   begin
+  $display("addi");
     ALU_result = Srs_reg + Sext_imm;
   end
 
   else if(opcode == 6'b001100)//andi
   begin
+  $display("andi");
     ALU_result = rs_reg & Zext_imm;
   end
 
   else if(opcode == 6'b001101)//ori
   begin
+  $display("ori");
     ALU_result = rs_reg | Zext_imm;
   end
 
   else if(opcode == 6'b001010)//slti
   begin
-    ALU_result = (Srs_reg < Sext_imm)?1'b1:1'b0;
+  $display("slti");
+    ALU_result = ($signed(Srs_reg) < $signed(Sext_imm))?32'b00000000000000000000000000000001:32'b00000000000000000000000000000000;
   end
 
   else if(opcode == 6'b000100)//beq
@@ -140,6 +151,7 @@ always @ ( opcode ) begin
     ALU_result = Srs_reg + Sext_imm;
   end
 
+$display("ALU_Result: %b",ALU_result);
 
 end//end ALU ops
 

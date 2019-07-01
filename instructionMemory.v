@@ -11,7 +11,8 @@ initial begin
   $readmemb("instructionMem.txt", mem);
 end
 
-always @ ( pc ) begin
+always @ (pc) begin
+$display("PC: %b",pc);
   instruction = {mem[pc],mem[pc+1'b1],mem[pc+2'b10],mem[pc+2'b11]};
 end
 

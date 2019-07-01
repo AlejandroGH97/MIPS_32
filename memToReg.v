@@ -8,7 +8,7 @@ wire toReg;
 wire[31:0] ALU_Result, mem_read;
 reg[31:0] out;
 
-always @ ( toReg ) begin
+always @ ( ALU_Result,mem_read ) begin
   if(toReg==1'b0)//ALU_Result
   begin
     out=ALU_Result;
