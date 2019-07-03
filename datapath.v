@@ -29,7 +29,7 @@ InstructionProcess processInstruction(instruction,opcode,rs,rt,rd,funct,immediat
 
 Registers RegOperations(PC,rs, rt, rd, opcode, immediate, RegWrite, RegRead, writeData, rs_reg, rt_reg,clk,rt_rd);
 
-DataMemory MemOperations(ALU_result,rt_reg,opcode,MemRead,MemWrite,clk,immediate,mem_read_data);//revisar parametros
+DataMemory MemOperations(ALU_result,rt_reg,opcode,MemRead,MemWrite,clk,immediate,mem_read_data);
 
 ALU ALUop(opcode,rs_reg,rt_reg,immediate,Branch,funct,ALU_result);
 
