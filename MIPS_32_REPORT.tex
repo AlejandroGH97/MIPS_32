@@ -72,7 +72,7 @@ que llega un $PC$. Las instrucciones se guardan en bytes por lo que el módulo c
 \text En este módulo se divide la instrucción en sus diferentes partes dependiendo del tipo de instrucción. Toma siempre el opcode ya que los primeros 6 bits siempre le van a pertenecer y con eso sabe cómo partir el resto de los bits.
 
 \subsection{Registers}
-\text Este módulo se encarga de los 32 registros con los que cuenta el procesador. Está separado en dos bloques $always$ uno para escritura y otro para lectura por lo que tiene dos señales que habilitan estos bloques. Para el bloque de escritura, también se cuenta con una señal para ver si se escribe a la dirección de rd o rt dependiendo si es una instrucción de tipo $R$ o $I$. En caso sea una instrucción de tipo $I$ se revisa el opcode en caso de que sea una instrucción load que tiene diferente comportamiento a las demás. Los registros están cargados inicialmente con puros $0$ de un archivo de texto.
+\text Este módulo se encarga de los 32 registros con los que cuenta el procesador. Está separado en dos bloques $always$ uno para escritura y otro para lectura por lo que tiene dos señales que habilitan estos bloques. Para el bloque de escritura, también se cuenta con una señal para ver si se escribe a la dirección de rd o rt dependiendo si es una instrucción de tipo $R$ o $I$. En caso sea una instrucción de tipo $I$ se revisa el opcode en caso de que sea una instrucción load que tiene diferente comportamiento a las demás. Los registros están cargados inicialmente con puros $0$ de un archivo de texto y se escribe el resultado a un archivo nuevo para comprobar que las operaciones sean correctas.
 
 \subsection{DataMemory}
 \text En el DataMemory se maneja el caché del procesador. Esta se carga de un archivo de texto lleno de 0. Cuenta con dos funciones, escritura y lectura. El módulo solo se llama para las instrucciones de load y store, mandando datos al registro en caso de loads y almacenando en la memoria en caso de store. Cuenta también con dos señales: $memWrite$ y $memRead$ para determinar la operación que se hace.
@@ -81,7 +81,7 @@ que llega un $PC$. Las instrucciones se guardan en bytes por lo que el módulo c
 \text La ALU se encarga de todas las operaciones aritméticas de nuestras instrucciones. También se encarga de determinar si se toma un branch o no. Siempre se revisa el opcode primero para ver si la instrucción es de tipo $R$ por lo que se pasa a revisar el valor de $funct$. La ALU también crea registros de tipo signed para las operaciones de suma o resta, calcula la dirección del branch, y la dirección de los stores y loads.
 
 \subsection{MemToReg}
-\text El módulo MemToReg es un multiplexer de 2 a 1 que se encarga de seleccionar que se va a mandar al módulo de registros para escritura. El selector de este multiplexer depende del tipo de instrucción que se está ejecutando.
+\text El módulo MemToReg es un multiplexer de 2 a 1 que se encarga de seleccionar que se va a mandar al módulo de registros para escritura. El selector de este multiplexer depende del tipo de instrucción que se está ejecutando y decide entre los datos de la ALU y la memoria.
 
 \section{Diagrama}
 

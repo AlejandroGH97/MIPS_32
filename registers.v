@@ -77,7 +77,7 @@ always @ (writeData) begin
       registers[writeAdd]=writeData;
     end
   end
-  //$writememb("registers.txt",registers);
+  $writememb("registers1.txt",registers);
 end
 
 always @ (read1, read2) begin
