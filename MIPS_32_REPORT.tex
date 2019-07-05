@@ -25,10 +25,9 @@
 	{\large \today\par}
 \end{titlepage}
 
-\section{Introducción}
-En este reporte se va a documentar la implementación de un procesador MIPS32 en verilog. Para las instrucciones se implementaran algunas instrucciones del instruction set detallado en el MIPS reference data card del siguiente enlace:
-\href{https://inst.eecs.berkeley.edu/~cs61c/resources/MIPS_Green_Sheet.pdf}{MIPS Resource Data Sheet}\\
-Las instrucciones implementadas son las siguientes:\\
+\section{Abstract}
+In this report we will detail the implementation of a MIPS32 processor in verilog. It will have a reduced set of instructions from the MIPS reference data card found in the following link: \href{https://inst.eecs.berkeley.edu/~cs61c/resources/MIPS_Green_Sheet.pdf}{MIPS Resource Data Sheet} The implemented instructions are the following:\\
+
 
 \begin{table}[htb]
 \begin{center}
@@ -45,11 +44,15 @@ slt &      & sw  & jal  \\ \hline
 \end{center}
 \end{table}
 
-Para el caso de bgez se usara el opcode $000001$.
+Since the bgez instruction is not specified there, we will use the opcode $000001$ for it.
+
+\section{Introduction}
+A procesor is the core of all computers, it is in charge of carrying out all the instructions needed and acts as a sort of "brain" for the computer. Nowadays we have a variety of procesors varying from architecture to processing speed. The processor we will implement is a MIPS32, meaning that it takes 32-bit instructions. The processor will have all the basic hardware it needs, only implementing an l1 cache.
 
 
-\section{Implementación}
-Para la implementación del procesador se usaron los siguientes módulos:
+
+\section{Methodology}
+For the implementation of the processor the following modules were used:
 \begin{enumerate}
 \item DataPath
 \item InstructionMemory
@@ -62,36 +65,45 @@ Para la implementación del procesador se usaron los siguientes módulos:
 \end{enumerate}
 
 \subsection{Datapath}
-\text Este módulo es la base del procesador, se encarga de enviar la información a todos los otros módulos mediante wires y de la declaración de todos los registros que se van a usar como las señales y registros. Además, se encarga de los incrementos del $PC$ a través de los jumps y branches o un incremento de 4.
+\text This module is the base of the processor, it is in charge of sending information to all the modules through wires and it declares all the registers that will be used such as the signals and registers for all register data. Furthermore, it is in charge of the program counter increments through jumps, branches or the default increment of 4.
 
 \subsection{InstructionMemory}
-\text En este módulo se almacenan las instrucciones en un registro desde un archivo de texto y se devuelve una instrucción cada vez
-que llega un $PC$. Las instrucciones se guardan en bytes por lo que el módulo concatena 4 direcciones para devolver la instrucción completa.
+\text This module stores all the instructions of our program. It opens a text file and stores it in a register. Whenever a $pc$ arrives it sends out a 32-bit instruction back to the datapath, to do this it takes the next four addresses of the instruction register to form the whole instruction since our memory is byte-addressable.
 
 \subsection{InstructionProcess}
-\text En este módulo se divide la instrucción en sus diferentes partes dependiendo del tipo de instrucción. Toma siempre el opcode ya que los primeros 6 bits siempre le van a pertenecer y con eso sabe cómo partir el resto de los bits.
+\text This module divides the instruction in its different parts depending on the opcode it gets. With the opcode it knows if the instruction is of type $I$, $R$ or $J$.
 
 \subsection{Registers}
-\text Este módulo se encarga de los 32 registros con los que cuenta el procesador. Está separado en dos bloques $always$ uno para escritura y otro para lectura por lo que tiene dos señales que habilitan estos bloques. Para el bloque de escritura, también se cuenta con una señal para ver si se escribe a la dirección de rd o rt dependiendo si es una instrucción de tipo $R$ o $I$. En caso sea una instrucción de tipo $I$ se revisa el opcode en caso de que sea una instrucción load que tiene diferente comportamiento a las demás. Los registros están cargados inicialmente con puros $0$ de un archivo de texto y se escribe el resultado a un archivo nuevo para comprobar que las operaciones sean correctas.
+\text This module is in charge of the 32 registers that the processor has. It is sepparated in two always blocks, one for writing and the other for reading so it has a signal for each. It also has another signal that determines if the module writes to the address stored in $rt$ or $rd$, depending on the type of instruction it got. If the instruction is of type $I$, it will check the opcode to see if it is a load instruction as a different amount of bits is stored with the different load instructions. The register is loaded incially with $0's$ from a text file and outputs the result into a new file to make sure the program executed correctly.
 
 \subsection{DataMemory}
-\text En el DataMemory se maneja el caché del procesador. Esta se carga de un archivo de texto lleno de 0. Cuenta con dos funciones, escritura y lectura. El módulo solo se llama para las instrucciones de load y store, mandando datos al registro en caso de loads y almacenando en la memoria en caso de store. Cuenta también con dos señales: $memWrite$ y $memRead$ para determinar la operación que se hace.
+\text The DataMemory module is in charge of the memory inside the processor. It is loaded from a file containing $0's$ and has two functions: write and read. This module is only called for load and store instructions, sending data to the register file in case of a load instruction and storing it in the memory in case of a store instruction. It uses signals $memWrite$ and $memRead$ to determine what to do with the data it gets.
 
 \subsection{ALU}
-\text La ALU se encarga de todas las operaciones aritméticas de nuestras instrucciones. También se encarga de determinar si se toma un branch o no. Siempre se revisa el opcode primero para ver si la instrucción es de tipo $R$ por lo que se pasa a revisar el valor de $funct$. La ALU también crea registros de tipo signed para las operaciones de suma o resta, calcula la dirección del branch, y la dirección de los stores y loads.
+\text La ALU module is in charge of all arithmetic operations. It also sends the branch signal to the datapath to know what to do with the program counter. It always checks the opcode first and if the instruction is of type $R$, it checks the $funct$ value to know what opperation to carry out. It also creates signed registers before the operations in order to work with negative numbers correctly where they are needed.
+
+\subsection{ControlUnit}
+\text This module is in charge of setting the signals that will be used to control the flow of data inside of our processor. It decides on this depeding on the $opcode$ and funct of the instruction that was fetched by the datapath module. All signals except for $rt_rd$ are inicialized on 0 and swapped accordingly.
 
 \subsection{MemToReg}
-\text El módulo MemToReg es un multiplexer de 2 a 1 que se encarga de seleccionar que se va a mandar al módulo de registros para escritura. El selector de este multiplexer depende del tipo de instrucción que se está ejecutando y decide entre los datos de la ALU y la memoria.
+\text This module is a 2 to 1 multiplexer that is in charge of selectig the data that will be sent back to the register module. The multiplexer dicides on this depending on a signal $toReg$ it gets from the control unit.
 
-\section{Diagrama}
+
+\section{Experimental Setup}
+\text The processor was programmed entirely on the programming language verilog, Icarus was used as the work was done in a machine with Ubuntu 18.04.2 LTS installed. Each module was tested independently before implementing it with the rest of the modules. The final datapath is the following:
 
 \includegraphics[width=14cm]{./datapath.jpg}
 
-\newpage
+\section{Evaluation}
+The procesor was implemented with $display$ commands throughout the modules to make sure each module was executing the right instructions when it needed to. For example: when a instruction was decided on, the ALU would display what instruction it would be. Another example is the InstructionProcess module displaying the different parts of the instruction. After running the three required programs, we can say that the processor is running correctly from the output files that each one generated.
 
-\section{Conclusiones}
-El procesador puede ejecutar todas las instrucciones propuestas exitosamente. Se crearon 3 programas para ejecutarlas. El primero ejecuta las dos primeras columnas de las instrucciones detalladas en la sección 1, el segundo la tercera columna y el tercer programa la cuarta columna. Para el debugging del procesador se usó el comando $display$ en varios lugares los cuales terminaron siendo usados para comprobar que el datapath funcione correctamente. Cada módulo ejecuta un $display$ dependiendo de las operaciones que ejecute las cuales detallan la ejecución de cada programa. El procesador implementado, aunque funcione correctamente, utiliza más hardware que un procesador común y gracias a las facilidades que ofrece el lenguaje usado se implementan algunos MUX dentro de los módulos  para reducir la cantidad de wires y módulos usados simplificando su lectura y comprensión.
 
+
+\section{Conclusions}
+The procesor was able to execute all proposed instructions sucesfully. The three programs that were created were able to run without flaw. The first one executed all instructions in the first and second column of the table in section 1, the second all instructions in the third column and the third program the instructions in the fourth column. Because of the $display$ commands and the output files we can be sure that the processor is running correctly. It should be noted that our processor includes an extra module, not included in procesors, mostly for ease of implementation. This is the InstructionProcess module, it could be included in the InstructionMemory module. Some other modules also include multiplexers in them, this was done to simplify the reading of the program making the main functional modules of the processor connected to each other with not much hardware between them.
+
+\section{Comments}
+The implementation of the processor was pretty straight forward, the process was divided into each independent module and the processor was built as each piece was completed. The main difficulty encountered was the wire management. Knowing where each wire had to go became mind-boggling at a point due to the amount of wires being used. The other main difficulty was trying to determine what signals would activate each always block in the modules, missing one variable would mean the instruction that was fetched would not run correctly, this was fixed with the help of the $display$ commands in the debugging process as they would show how our data was moving in the processor and we could pinpoint the exact parts where the error was ocurring.
 
 
 \end{document}
