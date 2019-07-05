@@ -27,7 +27,7 @@ InstructionMemory getInstruction(PC,instruction);
 
 InstructionProcess processInstruction(instruction,opcode,rs,rt,rd,funct,immediate,address);
 
-Registers RegOperations(PC,rs, rt, rd, opcode, immediate, RegWrite, RegRead, writeData, rs_reg, rt_reg,clk,rt_rd);
+Registers RegOperations(PC,rs, rt, rd, opcode, immediate,funct, RegWrite, RegRead, writeData, rs_reg, rt_reg,clk,rt_rd);
 
 DataMemory MemOperations(ALU_result,rt_reg,opcode,MemRead,MemWrite,clk,immediate,mem_read_data);
 

@@ -60,6 +60,11 @@ always @ (rs_reg,rt_reg,funct,immediate) begin
     $display("slt");
       ALU_result = (Srs_reg < Srt_reg)?1'b1:1'b0;
     end
+    if(funct == 6'b011000)//mult
+    begin
+    $display("mult");
+      ALU_result = Srs_reg * Srt_reg;
+    end
   end
 
   //i

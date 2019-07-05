@@ -4,6 +4,7 @@ module Registers(pc,
                   writeAdd,
                   opcode,
                   immediate,
+                  funct,
                   regWrite,RegRead,
                   writeData,
                   out1,
@@ -15,6 +16,7 @@ input[31:0] pc;
 input[4:0] read1, read2, writeAdd;
 input[5:0] opcode;
 input[15:0] immediate;
+input[5:0] funct;
 input clk, regWrite, RegRead,rt_rd;
 input[31:0] writeData;
 output [31:0] out1, out2;
@@ -23,6 +25,7 @@ wire[31:0] pc;
 wire[4:0] read1, read2, writeAdd;
 wire[5:0] opcode;
 wire[15:0] immediate;
+wire[5:0] funct;
 
 wire clk, regWrite, RegRead,rt_rd;
 wire[31:0] writeData;

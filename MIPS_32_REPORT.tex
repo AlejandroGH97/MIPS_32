@@ -44,7 +44,7 @@ slt &      & sw  & jal  \\ \hline
 \end{center}
 \end{table}
 
-Since the bgez instruction is not specified there, we will use the opcode $000001$ for it.
+Since the bgez instruction is not specified there, we will use the opcode $000001$ for it. The $mult$ instruction was also included to do the factorial program.
 
 \section{Introduction}
 A procesor is the core of all computers, it is in charge of carrying out all the instructions needed and acts as a sort of "brain" for the computer. Nowadays we have a variety of procesors varying from architecture to processing speed. The processor we will implement is a MIPS32, meaning that it takes 32-bit instructions. The processor will have all the basic hardware it needs, only implementing an l1 cache.
@@ -95,7 +95,7 @@ For the implementation of the processor the following modules were used:
 \includegraphics[width=14cm]{./datapath.png}
 
 \section{Evaluation}
-The procesor was implemented with $display$ commands throughout the modules to make sure each module was executing the right instructions when it needed to. For example: when a instruction was decided on, the ALU would display what instruction it would be. Another example is the InstructionProcess module displaying the different parts of the instruction. After running the three required programs, we can say that the processor is running correctly from the output files that each one generated.
+The procesor was implemented with $display$ commands throughout the modules to make sure each module was executing the right instructions when it needed to. For example: when a instruction was decided on, the ALU would display what instruction it would be. Another example is the InstructionProcess module displaying the different parts of the instruction. After running the three required programs, we can say that the processor is running correctly from the output files that each one generated. In the case of the factorial program, we check that the last mult operation gives the correct value for the factorial of 10, which it did.
 
 
 
